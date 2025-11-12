@@ -1,0 +1,19 @@
+---
+- name: Check if hosts are online
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Ping hosts to check connectivity
+      ansible.builtin.ping:
+      register: ping_result
+      ignore_unreachable: yes
+
+    - name: Show online hosts
+      debug:
+        msg: "{{ inventory_hostname }} is online"
+      when: ping_result.ping == 'pong'
+
+    - name: Show offline hosts
+      debug:
+        msg: "{{ inventory_hostname }} is offline or unreachable"
+      when: ping_result is failed or ping_result.ping is not defined
